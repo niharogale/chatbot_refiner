@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='output.css') }}">
+    <title>Chatbot Prompt Refinement</title>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-lg">
+        <h1 class="text-2xl font-bold mb-4 text-center">Test Models with and without Agents</h1>
+        <form id="modelForm" class="space-y-4">
+            <!-- Client Selection -->
+            <div class="space-y-2">
+                <label for="client_choice" class="block text-sm font-medium text-gray-700">Select Client:</label>
+                <select id="client_choice" name="client_choice"
+                        class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {% for key, value in clients.items() %}
+                    <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Model Selection -->
+            <div class="space-y-2">
+                <label for="model_choice" class="block text-sm font-medium text-gray-700">Select Model:</label>
+                <select id="model_choice" name="model_choice"
+                        class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {% for key, value in models.items() %}
+                    <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Prompt Input -->
+            <div class="space-y-2">
+                <label for="prompt" class="block text-sm font-medium text-gray-700">Enter Prompt:</label>
+                <textarea id="prompt" name="prompt" rows="5" placeholder="Enter your prompt here..."
+                          class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+            <!-- Agent Option -->
+            <div class="flex items-center">
+                <input type="checkbox" id="use_agent" name="use_agent" value="yes"
+                       class="mr-2 text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="use_agent" class="text-sm font-medium text-gray-700">Use Agent</label>
+            </div>
+            <div class="flex justify-between">
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">Generate
+                    Response
+                </button>
+            </div>
+        </form>
+        <div id="response-container" class="mt-6 p-4 bg-gray-100 rounded-md hidden">
+            <h2 class="text-xl font-semibold">Response:</h2>
+            <pre id="response" class="mt-2"></pre>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#modelForm').submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                    url: '/generate',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        $('#response').text(data.response);
+                        $('#response-container').removeClass('hidden');
+                    },
+                    error: function () {
+                        $('#response').text('Error generating response.');
+                        $('#response-container').removeClass('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

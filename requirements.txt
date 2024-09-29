@@ -1,0 +1,7 @@
+flask
+openai
+transformers
+pandas
+tabulate
+jupyter
+python-dotenv
